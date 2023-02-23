@@ -53,3 +53,8 @@ class C {
 
 Here we have only one edge, thus one path of length 1.
 Therefore, TCC = LCC = 1.
+
+
+# Could LCC be lower than TCC for any given class?
+No. LCC comprises all the path of length 1 in addition to the longer ones.
+TCC is made up of only the path of length 1. In this respect, LCC is greater or equal to TCC.
