@@ -1,0 +1,5 @@
+Private field | Class Name | Package
+----------------------------------
+pav1 | MyClass | org.example
+pav3 | MyClass | org.example
+gto | MyClass | org.example
