@@ -15,7 +15,7 @@ import java.util.List;
 public class No_Getter extends VoidVisitorWithDefaults<Void> {
     private final FileOutputStream report = new FileOutputStream(new File("report.txt"));
 
-    private String currentPackge = "";
+    private String currentPackage = "";
 
     public No_Getter() throws IOException {
         report.write("Private field | Class Name | Package".getBytes(StandardCharsets.UTF_8));
@@ -25,7 +25,7 @@ public class No_Getter extends VoidVisitorWithDefaults<Void> {
     @Override
     public void visit(CompilationUnit unit, Void arg) {
         // get Package Name
-        unit.getPackageDeclaration().ifPresent(pack -> currentPackge = pack.getNameAsString());
+        unit.getPackageDeclaration().ifPresent(pack -> currentPackage = pack.getNameAsString());
 
         for(ClassOrInterfaceDeclaration type : unit.findAll(ClassOrInterfaceDeclaration.class)) {
             type.accept(this, null);
@@ -49,7 +49,7 @@ public class No_Getter extends VoidVisitorWithDefaults<Void> {
                     ) {
                         // found issue => write to file
                         // new line
-                        String line = String.format("\n%s | %s | %s", nameField, declaration.getNameAsString(), currentPackge);
+                        String line = String.format("\n%s | %s | %s", nameField, declaration.getNameAsString(), currentPackage);
                         try {
                             report.write(line.getBytes());
                         } catch (IOException e) {
