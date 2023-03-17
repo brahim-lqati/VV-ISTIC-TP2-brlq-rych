@@ -9,17 +9,13 @@ import guru.nidi.graphviz.model.Node;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.statistics.HistogramDataset;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static guru.nidi.graphviz.model.Factory.graph;
 import static guru.nidi.graphviz.model.Factory.node;
@@ -27,10 +23,13 @@ import static guru.nidi.graphviz.model.Factory.to;
 
 public class MainTest {
 
+    /**
+     * method to generate dependency graph of each class using GraphViz
+     * @param data
+     */
     public static void generateGraphs(Map<String, List<PairM>> data) {
-        // generate Graph using GraphViz
-
-        // create graphs
+        // nodes = name of methods
+        // edge: shared variable between 2 methods
         List<Node> nodes = new ArrayList<>();
         data.forEach((k, value) -> {
             nodes.clear();
@@ -46,11 +45,14 @@ public class MainTest {
         });
     }
 
+    /**
+     * method to generate histogram showing the distribution of CC values in the project
+     * @param data: tcc values
+     * @param nameProject: name of projet
+     * @throws IOException
+     */
     public static void generateHistogram(double[] data, String nameProject) throws IOException {
         HistogramDataset histogramDataset = new HistogramDataset();
-/*
-        double[] values = data.stream().mapToDouble(Double::doubleValue).toArray();
-*/
         histogramDataset.addSeries("TCC Values", data, 25);
 
         // Create a chart
@@ -86,7 +88,7 @@ public class MainTest {
         // generate Histogram
         generateHistogram(tcc.getTccs(), file.getName());
 
-        // generate graph for each class
+        // generate dependency graph for each class
        generateGraphs(tcc.getDataForGraph());
 
     }

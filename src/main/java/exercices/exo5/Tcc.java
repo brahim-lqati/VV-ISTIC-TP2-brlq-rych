@@ -21,16 +21,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 public class Tcc extends VoidVisitorAdapter<Void> {
-    private String currentPackage;
+    private String currentPackage = "Default";
+    // Map contains name of class as key and Tcc as value
     private Map<String, Double> tccOfEachClass = new HashMap<>();
 
     private Map<String, Set<String>> methodAndVariables = new HashMap<>();
 
     private Map<String, List<PairM>> dataForGraph = new HashMap<>();
-    private final FileOutputStream report = new FileOutputStream(new File("report5.txt"));
+    private final FileOutputStream report;
 
     public Tcc() throws IOException {
+        report = new FileOutputStream(new File("tcc-report.txt"));
         report.write("Package Name, Class Name, TCC".getBytes(StandardCharsets.UTF_8));
+        report.write("\n---------------------------".getBytes(StandardCharsets.UTF_8));
     }
 
 /*    private final FileOutputStream report = new FileOutputStream(new File("tcc.txt"));
@@ -47,13 +50,18 @@ public class Tcc extends VoidVisitorAdapter<Void> {
         // get Package Name
         unit.getPackageDeclaration().ifPresent(pack -> currentPackage = pack.getNameAsString());
         for(ClassOrInterfaceDeclaration cc : unit.findAll(ClassOrInterfaceDeclaration.class)) {
-            // ignore test class
+            // ignore test classes
             if (cc.getNameAsString().toLowerCase().contains("test"))
                 continue;
             cc.accept(this, null);
         }
     }
 
+    /**
+     * Get all global variable used in method
+     * @param method : target method
+     * @return Set of String (variables name)
+     */
     public Set<String> getGlobalVariableNames(MethodDeclaration method) {
         Set<String> localVariables = method.findAll(VariableDeclarator.class)
                 .stream()
@@ -69,18 +77,28 @@ public class Tcc extends VoidVisitorAdapter<Void> {
                 .stream()
                 .map(FieldAccessExpr::getNameAsString)
                 .collect(Collectors.toSet());
+
         globalVariableNames.addAll(
                 method.findAll(NameExpr.class)
                         .stream()
                         .map(NameExpr::getNameAsString)
                         .collect(Collectors.toSet())
         );
+        // remove local variables
         globalVariableNames.removeAll(localVariables);
+        // remove parameter variables
         globalVariableNames.removeAll(parameterNames);
 
         return globalVariableNames;
     }
 
+    /**
+     * Method that return the calculated TCC of a class
+     * it also prepare data for graph creation method
+     * @param methodAndVariables Map of methods and its variables
+     * @param className the target class name
+     * @return double : tcc value
+     */
     public double calculTCC(Map<String, Set<String>> methodAndVariables, String className) {
         int numberMethods = methodAndVariables.size();
         int numPairMethods = (numberMethods * (numberMethods - 1)) / 2;
@@ -89,7 +107,6 @@ public class Tcc extends VoidVisitorAdapter<Void> {
         List<PairM> pairMS = new ArrayList<>();
         for (int i = 0; i<keys.size() - 1; i++) {
             for (int j = i+1; j<keys.size(); j++) {
-
                 Set<String> sharedVariables = new HashSet<>(methodAndVariables.get(keys.get(i)));
                 sharedVariables.retainAll(methodAndVariables.get(keys.get(j)));
                 if (sharedVariables.size() > 0) {
@@ -101,6 +118,7 @@ public class Tcc extends VoidVisitorAdapter<Void> {
                 }
             }
         }
+        // add this pair method (its shared variables)
         if (pairMS.size() > 0) {
             dataForGraph.put(className, pairMS);
         }
@@ -114,14 +132,38 @@ public class Tcc extends VoidVisitorAdapter<Void> {
             methodAndVariables.put(method.getNameAsString(), getGlobalVariableNames(method));
         });
         // calculate the TCC of each class
-       tccOfEachClass.put(cc.getNameAsString(), calculTCC(methodAndVariables, cc.getNameAsString()));
+       double tccValue = calculTCC(methodAndVariables, cc.getNameAsString());
+       tccOfEachClass.put(cc.getNameAsString(), tccValue);
+
+       // update the file report
+       // add to report a new line contain (package, className, Tcc value)
+       String newline = String.format("\n%s | %s | %s",
+               currentPackage,
+               cc.getNameAsString(),
+               tccValue
+               );
+       try {
+           report.write(newline.getBytes());
+       } catch (IOException e) {
+           throw new RuntimeException(e);
+       }
+
    }
 
 
-    public double[] getTccs() {
+    /**
+     * return all tcc values of the project
+     * used to generate histogram
+      * @return double values in array
+     */
+   public double[] getTccs() {
         return tccOfEachClass.values().stream().mapToDouble(Double::doubleValue).toArray();
     }
 
+    /**
+     * return used data to generate dependency graph of each class
+     * @return Map contain the class name as key and a list of PairM as value
+     */
     public Map<String, List<PairM>> getDataForGraph() {
         return dataForGraph;
     }

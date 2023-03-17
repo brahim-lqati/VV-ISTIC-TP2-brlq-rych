@@ -1,5 +1,10 @@
 package exercices.exo5;
 
+/**
+ * class used to facilitate the creation of dependency graph
+ * node: represent the method name
+ * label: represent the shared variable names between 2 nodes
+ */
 public class PairM {
     public PairM(String node1, String node2, String label) {
         this.node1 = node1;
