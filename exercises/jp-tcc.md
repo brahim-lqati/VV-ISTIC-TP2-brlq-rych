@@ -9,3 +9,14 @@ Ignore inherited members to compute TCC of a class.
 Include in this repository the code of your application. Remove all unnecessary files like compiled binaries. Do include the reports and plots you obtained from different projects. See the [instructions](../sujet.md) for suggestions on the projects to use.
 
 You may use [javaparser-starter](../code/javaparser-starter) as a starting point.
+
+## Answer
+#### We choose the Apache Commons Collections project as input
+You can find the program [here](../src/main/java/exercices/exo5), start from *MainTest* class.
+The program can:
+- Create a txt report that's contain *Package Name*, *Class Name*, and *Tcc Value* for each 
+class in the project.
+U can see the [report](../Reports/tcc-report.txt)
+- Produce a histogram showing the distribution of TCC values in the project.
+[The histogram](../Histogram/histogram.jpeg) generated using this project (Apach ...)
+- Produce the dependency graph of each class. An [exemple](../Graphs/AsMapGraph.png) of graph for *AsMap* class.

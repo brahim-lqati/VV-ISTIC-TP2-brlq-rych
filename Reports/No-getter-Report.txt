@@ -1,0 +1,4 @@
+Private field | Class Name | Package
+----------------------------------
+name | TestClassNoGetter | Default
+adult | TestClassNoGetter | Default

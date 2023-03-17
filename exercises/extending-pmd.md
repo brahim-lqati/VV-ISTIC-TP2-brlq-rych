@@ -23,3 +23,26 @@ Use your rule with different projects and describe you findings below. See the [
 
 ## Answer
 
+Adding a new rule to calculate the number of nested if clauses in a class
+ I used this rule :
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset >
+    <description>Default ruleset</description>
+    <rule name="rule_to_check_if_clauses"
+      language="java"
+      message="detect nested if"
+      class="net.sourceforge.pmd.lang.rule.XPathRule">
+
+           <properties>
+              <property name="xpath">
+                 <value>
+        <![CDATA[count(//IfStatement[count(.//IfStatement) >= 2])]]>
+                 </value>
+              </property>
+           </properties>
+        </rule>
+</ruleset>
+
+```
+
