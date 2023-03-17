@@ -89,7 +89,7 @@ public class MainTest {
         generateHistogram(tcc.getTccs(), file.getName());
 
         // generate dependency graph for each class
-       generateGraphs(tcc.getDataForGraph());
+        generateGraphs(tcc.getDataForGraph());
 
     }
 }

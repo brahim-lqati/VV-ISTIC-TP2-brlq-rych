@@ -27,7 +27,7 @@ public class No_Getter extends VoidVisitorWithDefaults<Void> {
      * @throws IOException
      */
     public No_Getter() throws IOException {
-        report = new FileOutputStream(new File("tcc-report.txt"));
+        report = new FileOutputStream(new File("Reports/No-getter-Report.txt"));
         report.write("Private field | Class Name | Package".getBytes(StandardCharsets.UTF_8));
         report.write("\n----------------------------------".getBytes());
     }

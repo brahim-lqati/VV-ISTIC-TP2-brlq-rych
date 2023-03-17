@@ -31,19 +31,10 @@ public class Tcc extends VoidVisitorAdapter<Void> {
     private final FileOutputStream report;
 
     public Tcc() throws IOException {
-        report = new FileOutputStream(new File("tcc-report.txt"));
+        report = new FileOutputStream(new File("Reports/tcc-report.txt"));
         report.write("Package Name, Class Name, TCC".getBytes(StandardCharsets.UTF_8));
         report.write("\n---------------------------".getBytes(StandardCharsets.UTF_8));
     }
-
-/*    private final FileOutputStream report = new FileOutputStream(new File("tcc.txt"));
-
-    private String currentPackage = "";
-
-    public Tcc() throws IOException {
-        report.write("Private field | Class Name | Package".getBytes(StandardCharsets.UTF_8));
-        report.write("\n----------------------------------".getBytes());
-    }*/
 
     @Override
     public void visit(CompilationUnit unit, Void arg) {
