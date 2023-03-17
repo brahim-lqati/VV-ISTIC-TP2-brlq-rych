@@ -12,12 +12,22 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+
+/**
+ * This class produce a txt report contains private fields of public classes that have no public getter
+ * the report contains : name of field, their class Name, and the package of class
+ */
 public class No_Getter extends VoidVisitorWithDefaults<Void> {
-    private final FileOutputStream report = new FileOutputStream(new File("report.txt"));
+    private final FileOutputStream report;
 
-    private String currentPackage = "";
+    private String currentPackage = "Default";
 
+    /**
+     * prepare the file of our result
+     * @throws IOException
+     */
     public No_Getter() throws IOException {
+        report = new FileOutputStream(new File("tcc-report.txt"));
         report.write("Private field | Class Name | Package".getBytes(StandardCharsets.UTF_8));
         report.write("\n----------------------------------".getBytes());
     }
@@ -34,17 +44,28 @@ public class No_Getter extends VoidVisitorWithDefaults<Void> {
 
     @Override
     public void visit(ClassOrInterfaceDeclaration declaration, Void arg) {
+        // iterate over private fields
         for (FieldDeclaration field: declaration.getFields()) {
             if (field.isPrivate()) {
                 field.getVariables().forEach(v -> {
                     String nameField = v.getNameAsString();
-                    String nameG = "get" + nameField.substring(0,1).toUpperCase() +
-                           nameField.substring(1);
+                    String typeField = v.getTypeAsString();
+                    String nameGetterMd = "";
+                    // default nomination method for boolean fields
+                    if (typeField.equals("boolean")) {
+                        nameGetterMd = "is" + nameField.substring(0,1).toUpperCase() +
+                                nameField.substring(1);
+                    } else {
+                        // default nomination method for other types
+                        nameGetterMd = "get" + nameField.substring(0,1).toUpperCase() +
+                                nameField.substring(1);
+                    }
 
-                    List<MethodDeclaration> getter = declaration.getMethodsByName(nameG);
+                    List<MethodDeclaration> getter = declaration.getMethodsByName(nameGetterMd);
                     if (getter == null ||
                             getter.size() == 0 ||
                             getter.get(0).isPrivate() ||
+                            // check the return type, it should be the same as the field
                             !getter.get(0).getTypeAsString().equals(v.getTypeAsString())
                     ) {
                         // found issue => write to file
